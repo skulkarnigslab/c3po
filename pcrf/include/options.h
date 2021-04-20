@@ -123,6 +123,18 @@ private:
 	std::unordered_map<int, std::string> m_activation_rules_map;
 };
 
+
+class ActivateServiceType
+{
+public:
+	ActivateServiceType();
+	~ActivateServiceType();
+
+private:
+	std::string m_activate_service_type_name;
+	std::list<std::string>
+};
+
 class ServiceProfiles
 {
 public:
@@ -144,9 +156,14 @@ public:
 	void add_service_type_map( std::string key, std::string val );
 	void remove_service_type_map( std::string& v );
 	std::string get_service_type_map( std::string& v );
+
+	void add_service_type_list_map( std::string key, std::list<std::string>& service_type_list );
+	void remove_service_type_list_map( std::string& key );
+	std::list<std::string>& get_service_type_list_map( std::string& key );
 private:	
 	std::string m_service_name; // service_group_name;
 	std::string m_service_type;
+	std::unordered_map<std::string, std::list<std::string>&> m_service_type_list_map; //multiple service type like default_activate_service, on_demand_activate_service.
 	std::list<std::string> m_service_type_list;
 	std::unordered_map<std::string, std::string> m_service_type_map;
 };
