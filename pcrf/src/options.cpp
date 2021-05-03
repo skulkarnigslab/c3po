@@ -96,14 +96,13 @@ void PoliciesConfig::getDefaultRule( std::string& apn_name, DefaultRule* default
 	ServiceProfiles* service_profile = 	get_service_group_map( apn_name );	
 	if( service_profile != NULL )
 	{
-		std::string service_type = service_profile->getServiceType();
-		if( strcmp( service_type.c_str(), "default-activate-service" ) == 0 )
-		{
-			default_rule->setDefaultRuleFlag( true );
-		}
-		std::string service_name = service_profile->get_service_type_map( service_type );
+		std::string default_service_key_name( "default-activate-service" );
+		std::string default_activate_service_val = service_profile->get_service_type_map( default_service_key_name );
+		printf( "SOHAN : Default Activate Service Val : %s\n", default_activate_service_val.c_str() );
+		default_rule->setDefaultRuleFlag( true );
+		//std::string service_name = service_profile->get_service_type_map( default_activate_service_val );
 	
-		ServiceSelection* service_selection = get_service_selection_map( service_name );
+		ServiceSelection* service_selection = get_service_selection_map( default_activate_service_val );
 		if( service_selection != NULL )
 		{
 			default_rule->setApnAggregateMaxBitrateUl( service_selection->getAmbrUl() );
@@ -591,7 +590,9 @@ bool Options::parseSubscriberProfiles( const char* jsonFile )
 				for( RAPIDJSON_NAMESPACE::Value::ConstMemberIterator sub_service_group_itr = subServiceGroup.MemberBegin(); sub_service_group_itr != subServiceGroup.MemberEnd(); ++sub_service_group_itr )
 				{
 					ServiceProfiles* service_profile = new ServiceProfiles();
+					//printf( "SOHAN : New Service profile \n" );
 					std::string service_group_name = sub_service_group_itr->name.GetString();
+					//printf( "SOHAN : Service group Name : %s\n", service_group_name.c_str() );
 					service_profile->setServiceName( service_group_name );
 					const RAPIDJSON_NAMESPACE::Value& subServiceSection = sub_service_group_itr->value;
 					for( RAPIDJSON_NAMESPACE::Value::ConstMemberIterator sub_service_section_itr = subServiceSection.MemberBegin(); sub_service_section_itr != subServiceSection.MemberEnd(); ++sub_service_section_itr )
@@ -599,6 +600,7 @@ bool Options::parseSubscriberProfiles( const char* jsonFile )
 						std::string activate_service_val;
 						std::string activate_service_name = sub_service_section_itr->name.GetString();
 						service_profile->setServiceType( activate_service_name );
+						//printf("SOHAN : Service Type Name : %s\n", activate_service_name.c_str() );
 						const RAPIDJSON_NAMESPACE::Value& service_section_value = sub_service_section_itr->value;
 						for( uint32_t i = 0; i < sub_service_section_itr->value.Size(); i++ )
 						{	
@@ -606,6 +608,7 @@ bool Options::parseSubscriberProfiles( const char* jsonFile )
 							activate_service_val =  sub_service_section_itr->value[i].GetString();
 						}
 						// TODO: Add string list as a 2 type in map
+						//printf( "SOHAN : Activate Service Name : %s \t Activate Service Val : %s\n", activate_service_name.c_str(), activate_service_val.c_str() );
 						service_profile->add_service_type_map( activate_service_name, activate_service_val );
 					}
 					m_policies_config->add_service_group_map( service_group_name, service_profile );
